@@ -6,4 +6,4 @@ bomberman = BombermanX.load!(input_path)
 
 bomberman = BombermanX.trigger!(bomberman, bomb_x, bomb_y)
 
-BombermanX.save!(output_path, bomberman)
+BombermanX.save!(bomberman, output_path)

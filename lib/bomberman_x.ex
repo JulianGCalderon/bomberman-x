@@ -1,28 +1,50 @@
 defmodule BombermanX do
-  defstruct [:cells]
-  @type t :: %BombermanX{cells: list(list(String.t()))}
+  defstruct [:board, :width, :height]
 
-  @moduledoc """
-  Documentation for `BombermanX`.
-  """
+  @type t :: %BombermanX{:board => board(), :width => integer(), :height => integer()}
+  @type board :: %{required({integer(), integer()}) => element()}
+  @type element :: String.t()
+  @type matrix :: list(list(element))
 
   @spec load!(Path.t()) :: t()
   def load!(path) do
     file = File.stream!(path, [:utf8], :line)
 
-    cells = Enum.map(file, &String.split(&1))
+    board =
+      for {line, y} <- Enum.with_index(file),
+          {element, x} <- Enum.with_index(String.split(line)),
+          into: %{} do
+        {{x, y}, element}
+      end
 
-    %BombermanX{cells: cells}
+    width = Map.keys(board) |> Enum.map(fn {x, _} -> x end) |> Enum.max()
+    height = Map.keys(board) |> Enum.map(fn {_, y} -> y end) |> Enum.max()
+
+    %BombermanX{board: board, width: width, height: height}
   end
 
-  def trigger!(bomberman, bomb_x, bomb_y) do
+  def trigger!(bomberman, _bomb_x, _bomb_y) do
     bomberman
   end
 
-  @spec save!(Path.t(), t()) :: :ok
-  def save!(path, bomberman) do
+  @spec save!(t(), Path.t()) :: :ok
+  def save!(bomberman, path) do
+    to_matrix(bomberman) |> save_matrix!(path)
+  end
+
+  @spec to_matrix(t()) :: matrix()
+  def to_matrix(bomberman) do
+    for y <- 0..(bomberman.height - 1) do
+      for x <- 0..(bomberman.width - 1) do
+        Map.get(bomberman.board, {x, y})
+      end
+    end
+  end
+
+  @spec save_matrix!(Path.t(), matrix()) :: :ok
+  def save_matrix!(matrix, path) do
     file = File.open!(path, [:write])
 
-    Enum.each(bomberman.cells, &IO.puts(file, Enum.intersperse(&1, " ")))
+    Enum.each(matrix, &IO.puts(file, Enum.intersperse(&1, " ")))
   end
 end
