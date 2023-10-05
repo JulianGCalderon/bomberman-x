@@ -12,15 +12,16 @@ defmodule Board do
   def save!(board, path) do
     file = File.open!(path, [:write])
 
-    Enum.each(Board.to_string_matrix(board), &IO.puts(file, Enum.intersperse(&1, " ")))
+    IO.puts(file, Board.to_strings(board))
   end
 
-  def to_string_matrix(board) do
-    for row <- board do
-      for element <- row do
-        Element.to_string(element)
-      end
-    end
+  def map(board, fun) do
+    Enum.map(board, &Enum.map(&1, fun))
+  end
+
+  def to_strings(board) do
+    board = Board.map(board, &Element.to_string/1)
+    Enum.map_intersperse(board, "\n", &Enum.intersperse(&1, " "))
   end
 end
 
@@ -44,6 +45,13 @@ defmodule Element do
 
   @type t :: :empty | :rock | :wall | Bomb.t() | Detour.t() | Enemy.t()
 
+  @spec from_string(String.t()) ::
+          :empty
+          | :rock
+          | :wall
+          | Detour.t()
+          | Enemy.t()
+          | Bomb.t()
   def from_string(string) do
     case to_charlist(string) do
       [?_] -> :empty
@@ -59,6 +67,14 @@ defmodule Element do
     end
   end
 
+  @spec to_string(
+          :empty
+          | :rock
+          | :wall
+          | Detour.t()
+          | Enemy.t()
+          | Bomb.t()
+        ) :: String.t()
   def to_string(element) do
     case element do
       :empty -> "_"
