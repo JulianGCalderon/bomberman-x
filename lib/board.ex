@@ -4,7 +4,7 @@ defmodule Board do
 
     for line <- file do
       for element <- String.split(line) do
-        Element.from_string(element)
+        Element.parse(element)
       end
     end
   end
@@ -15,17 +15,18 @@ defmodule Board do
     IO.puts(file, Board.to_strings(board))
   end
 
-  def map(board, fun) do
-    Enum.map(board, &Enum.map(&1, fun))
+  def to_strings(board) do
+    Enum.map_intersperse(board, "\n", &Board.row_to_strings/1)
   end
 
-  def to_strings(board) do
-    board = Board.map(board, &Element.to_string/1)
-    Enum.map_intersperse(board, "\n", &Enum.intersperse(&1, " "))
+  def row_to_strings(row) do
+    Enum.map_intersperse(row, " ", &Element.display/1)
   end
 end
 
 defmodule Element do
+  @type t :: :empty | :rock | :wall | Bomb.t() | Detour.t() | Enemy.t()
+
   defmodule Bomb do
     defstruct [:range, :type]
     @type t :: %Element.Bomb{:range => integer(), :type => bomb_type()}
@@ -43,50 +44,60 @@ defmodule Element do
     @type t :: %Element.Enemy{:health => integer()}
   end
 
-  @type t :: :empty | :rock | :wall | Bomb.t() | Detour.t() | Enemy.t()
+  def parse_direction(?D), do: :down
+  def parse_direction(?U), do: :up
+  def parse_direction(?L), do: :left
+  def parse_direction(?R), do: :right
 
-  @spec from_string(String.t()) ::
-          :empty
-          | :rock
-          | :wall
-          | Detour.t()
-          | Enemy.t()
-          | Bomb.t()
-  def from_string(string) do
-    case to_charlist(string) do
-      [?_] -> :empty
-      [?R] -> :rock
-      [?W] -> :wall
-      [?D, ?U] -> %Detour{direction: :up}
-      [?D, ?D] -> %Detour{direction: :down}
-      [?D, ?L] -> %Detour{direction: :left}
-      [?D, ?R] -> %Detour{direction: :right}
-      [?F, health] -> %Enemy{health: health - ?0}
-      [?B, range] -> %Bomb{range: range - ?0, type: :normal}
-      [?S, range] -> %Bomb{range: range - ?0, type: :pierce}
-    end
+  def parse_digit(digit) when digit in ?0..?9 do
+    digit - ?0
   end
 
-  @spec to_string(
-          :empty
-          | :rock
-          | :wall
-          | Detour.t()
-          | Enemy.t()
-          | Bomb.t()
-        ) :: String.t()
-  def to_string(element) do
-    case element do
-      :empty -> "_"
-      :rock -> "R"
-      :wall -> "W"
-      %Detour{direction: :up} -> "DU"
-      %Detour{direction: :down} -> "DD"
-      %Detour{direction: :left} -> "DL"
-      %Detour{direction: :right} -> "DR"
-      %Enemy{health: health} -> "F" <> Integer.to_string(health, 10)
-      %Bomb{range: range, type: :normal} -> "B" <> Integer.to_string(range, 10)
-      %Bomb{range: range, type: :pierce} -> "S" <> Integer.to_string(range, 10)
-    end
+  def parse(<<?_>>), do: :empty
+  def parse(<<?R>>), do: :rock
+  def parse(<<?W>>), do: :wall
+
+  def parse(<<?D, direction>>) do
+    %Detour{direction: parse_direction(direction)}
+  end
+
+  def parse(<<?F, health>>) do
+    %Enemy{health: parse_digit(health)}
+  end
+
+  def parse(<<?B, range>>) do
+    %Bomb{range: parse_digit(range), type: :normal}
+  end
+
+  def parse(<<?S, range>>) do
+    %Bomb{range: parse_digit(range), type: :pierce}
+  end
+
+  def display_direction(:up), do: "U"
+  def display_direction(:down), do: "D"
+  def display_direction(:left), do: "L"
+  def display_direction(:right), do: "R"
+
+  def display_bomb_type(:pierce), do: "S"
+  def display_bomb_type(:normal), do: "B"
+
+  def display_digit(digit) when digit in 0..9 do
+    <<?0 + digit>>
+  end
+
+  def display(:empty), do: "_"
+  def display(:rock), do: "R"
+  def display(:wall), do: "W"
+
+  def display(%Detour{direction: direction}) do
+    "D" <> display_direction(direction)
+  end
+
+  def display(%Enemy{health: health}) do
+    "F" <> display_digit(health)
+  end
+
+  def display(%Bomb{range: range, type: bomb_type}) do
+    display_bomb_type(bomb_type) <> display_digit(range)
   end
 end
