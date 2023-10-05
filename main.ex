@@ -1,9 +1,7 @@
 require BombermanX
 
-[input_path, output_path, bomb_x, bomb_y] = System.argv()
+[input_path, output_path, _bomb_x, _bomb_y] = System.argv()
 
-bomberman = BombermanX.load!(input_path)
+bomberman = Board.load!(input_path)
 
-bomberman = BombermanX.trigger!(bomberman, bomb_x, bomb_y)
-
-BombermanX.save!(bomberman, output_path)
+Board.save!(bomberman, output_path)
