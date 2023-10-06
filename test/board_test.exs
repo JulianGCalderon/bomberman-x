@@ -5,7 +5,8 @@ defmodule BoardTest do
   def test_parsing_ok(path) do
     content = File.read!(path)
 
-    board = Board.from_string(content)
+    {:ok, board} = Board.from_string(content)
+
     stringed = IO.chardata_to_string(Board.to_strings(board))
 
     assert stringed == content

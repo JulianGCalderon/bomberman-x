@@ -17,18 +17,41 @@ defmodule Board do
 
   def from_lines(lines) do
     try do
-      for line <- lines do
-        for element <- String.split(line) do
-          case Element.parse(element) do
-            {:ok, element} -> element
-            error -> throw(error)
+      board =
+        for line <- lines do
+          for element <- String.split(line) do
+            case Element.parse(element) do
+              {:ok, element} -> element
+              error -> throw(error)
+            end
           end
         end
-      end
+
+      {:ok, board}
     catch
       error -> error
     end
   end
+
+  # def from_row(row) do
+  #   for element <- String.split(row), reduce: {:ok, []} do
+  #     acc ->
+  #       with {:ok, acc} <- acc,
+  #            {:ok, element} <- Element.parse(element) do
+  #         {:ok, acc ++ [element]}
+  #       end
+  #   end
+  # end
+
+  # def from_lines(lines) do
+  #   for line <- lines, reduce: {:ok, []} do
+  #     acc ->
+  #       with {:ok, acc} <- acc,
+  #            {:ok, line} <- Board.from_row(line) do
+  #         {:ok, acc ++ [line]}
+  #       end
+  #   end
+  # end
 
   def to_strings(board) do
     Enum.map_intersperse(board, "\n", &Board.row_to_strings/1)
