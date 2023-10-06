@@ -15,8 +15,8 @@ Bomberman X (¿o era Megaman X?). Implementación en Elixir de la lógica de pro
 
 Los laberintos se representan como una matriz separada por lineas y espacios, donde cada posición contiene un elemento particular. Los elementos són:
 
-- `"Br`: Bomba regular, donde `d` indica el rango
-- `"Sr`: Bomba de traspaso, donde `d` indica el rango
+- `"Br`: Bomba regular, donde `r` indica el rango
+- `"Sr`: Bomba de traspaso, donde `r` indica el rango
 - `"Fh`: Enemigo, donde `h` indica la vida
 - `"Dd`: Desvio, donde `d` indica una dirección entre `U`, `D`, `L`, `R` (arriba, abajo, izquierda, derecha, respectivamente).
 - `"R"`: Roca
