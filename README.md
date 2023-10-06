@@ -1,21 +1,35 @@
-# BombermanX
+# Bomberman X
 
-**TODO: Add description**
+Bomberman X (¿o era Megaman X?). Implementación en Elixir de la lógica de propagación de explociones del clasico juego Bomberman.
 
-## Installation
+## Funcionalidad
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `bomberman_x` to your list of dependencies in `mix.exs`:
 
-```elixir
-def deps do
-  [
-    {:bomberman_x, "~> 0.1.0"}
-  ]
-end
+1. [x] Lee un laberinto a partir de un `String`.
+2. [x] Lo carga en memoria, siendo representado con estructuras propias.
+3. [ ] Detona una bomba en particular.
+4. [ ] Calcula el estado final del laberinto tras detonar la bomba.
+5. [x] Lo vuelve a convertir en `String`.
+
+## Laberintos
+
+Los laberintos se representan como una matriz separada por lineas y espacios, donde cada posición contiene un elemento particular. Los elementos són:
+
+- `"B" <> r`: Bomba regular, donde `d` indica el rango
+- `"S" <> r`: Bomba de traspaso, donde `d` indica el rango
+- `"F" <> h`: Enemigo, donde `h` indica la vida
+- `"D" <> d`: Desvio, donde `d` indica una dirección entre `U`, `D`, `L`, `R` (arriba, abajo, izquierda, derecha, respectivamente).
+- `"R"`: Roca
+- `"W"`: Muro
+
+Luego, los tableros pueden verse como:
+
 ```
-
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/bomberman_x](https://hexdocs.pm/bomberman_x).
-
+B2 R R _ F1 _ _
+_ W R W _ W _
+B5 _ _ _ B2 _ _
+_ W _ W _ W _
+DR _ DU _ _ _ _
+S3 W _ W _ W _
+_ _ _ _ _ _ _
+```
