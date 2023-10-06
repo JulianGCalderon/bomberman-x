@@ -62,14 +62,6 @@ defmodule Element do
     @type t :: %Element.Enemy{:health => integer()}
   end
 
-  # def parse_digit(digit) when digit in ?0..?9 do
-  #   digit - ?0
-  # end
-
-  # def display_digit(digit) when digit in 0..9 do
-  #   <<?0 + digit>>
-  # end
-
   def parse(<<?_>>), do: :empty
   def parse(<<?R>>), do: :rock
   def parse(<<?W>>), do: :wall
