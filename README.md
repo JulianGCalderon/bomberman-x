@@ -5,11 +5,11 @@ Bomberman X (¿o era Megaman X?). Implementación en Elixir de la lógica de pro
 ## Funcionalidad
 
 
-1. [x] Lee un laberinto a partir de un `String`.
-2. [x] Lo carga en memoria, siendo representado con estructuras propias.
-3. [ ] Detona una bomba en particular.
-4. [ ] Calcula el estado final del laberinto tras detonar la bomba.
-5. [x] Lo vuelve a convertir en `String`.
+- [x] Lee un laberinto a partir de un `String`.
+- [x] Lo carga en memoria, siendo representado con estructuras propias.
+- [ ] Detona una bomba en particular.
+- [ ] Calcula el estado final del laberinto tras detonar la bomba.
+- [x] Lo vuelve a convertir en `String`.
 
 ## Laberintos
 
