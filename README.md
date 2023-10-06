@@ -11,6 +11,9 @@ Bomberman X (¿o era Megaman X?). Implementación en Elixir de la lógica de pro
 - [ ] Calcula el estado final del laberinto tras detonar la bomba.
 - [x] Lo vuelve a convertir en `String`.
 
+
+Nota: En el juego original las rocas pueden ser destruidas con bombas. Aquí no ocurre.
+
 ## Laberintos
 
 Los laberintos se representan como una matriz separada por lineas y espacios, donde cada posición contiene un elemento particular. Los elementos són:
@@ -21,6 +24,7 @@ Los laberintos se representan como una matriz separada por lineas y espacios, do
 - `"Dd`: Desvio, donde `d` indica una dirección entre `U`, `D`, `L`, `R` (arriba, abajo, izquierda, derecha, respectivamente).
 - `"R"`: Roca
 - `"W"`: Muro
+
 
 Luego, los tableros pueden verse como:
 
