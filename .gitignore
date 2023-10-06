@@ -25,4 +25,4 @@ bomberman_x-*.tar
 # Temporary files, for example, from tests.
 /tmp/
 
-/output
+/output/
