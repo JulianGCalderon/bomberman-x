@@ -1,3 +1,0 @@
-defmodule BombermanX do
-
-end
