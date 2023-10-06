@@ -33,8 +33,6 @@ defmodule Board do
     end
   end
 
-  
-
   # def from_row(row) do
   #   for element <- String.split(row), reduce: {:ok, []} do
   #     acc ->
@@ -44,7 +42,6 @@ defmodule Board do
   #       end
   #   end
   # end
-
   # def from_lines(lines) do
   #   for line <- lines, reduce: {:ok, []} do
   #     acc ->
