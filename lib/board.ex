@@ -16,10 +16,17 @@ defmodule Board do
   end
 
   def from_lines(lines) do
-    for line <- lines do
-      for element <- String.split(line) do
-        Element.parse(element)
+    try do
+      for line <- lines do
+        for element <- String.split(line) do
+          case Element.parse(element) do
+            {:ok, element} -> element
+            error -> throw(error)
+          end
+        end
       end
+    catch
+      error -> error
     end
   end
 
@@ -41,15 +48,21 @@ defmodule Element do
     @type t :: %Element.Bomb{:range => integer(), :type => Element.bomb_type()}
   end
 
+  defmodule Enemy do
+    defstruct [:health]
+    @type t :: %Element.Enemy{:health => integer()}
+  end
+
   defmodule Detour do
     defstruct [:direction]
     @type t :: %Element.Detour{:direction => direction()}
     @type direction :: :up | :down | :left | :right
 
-    def parse_direction(?D), do: :down
-    def parse_direction(?U), do: :up
-    def parse_direction(?L), do: :left
-    def parse_direction(?R), do: :right
+    def parse_direction(?D), do: {:ok, :down}
+    def parse_direction(?U), do: {:ok, :up}
+    def parse_direction(?L), do: {:ok, :left}
+    def parse_direction(?R), do: {:ok, :right}
+    def parse_direction(_), do: :error
 
     def display_direction(:up), do: "U"
     def display_direction(:down), do: "D"
@@ -57,30 +70,45 @@ defmodule Element do
     def display_direction(:right), do: "R"
   end
 
-  defmodule Enemy do
-    defstruct [:health]
-    @type t :: %Element.Enemy{:health => integer()}
+  def parse_integer(number) do
+    with {integer, _} <- Integer.parse(number) do
+      {:ok, integer}
+    end
   end
 
-  def parse(<<?_>>), do: :empty
-  def parse(<<?R>>), do: :rock
-  def parse(<<?W>>), do: :wall
+  def parse(<<?_>>), do: {:ok, :empty}
+  def parse(<<?R>>), do: {:ok, :rock}
+  def parse(<<?W>>), do: {:ok, :wall}
 
   def parse(<<?D, direction>>) do
-    %Detour{direction: Detour.parse_direction(direction)}
+    with {:ok, direction} <- Detour.parse_direction(direction) do
+      detour = %Detour{direction: direction}
+      {:ok, detour}
+    end
   end
 
   def parse(<<?F, health::binary>>) do
-    %Enemy{health: String.to_integer(health)}
+    with {:ok, health} <- parse_integer(health) do
+      enemy = %Enemy{health: health}
+      {:ok, enemy}
+    end
   end
 
   def parse(<<?B, range::binary>>) do
-    %Bomb{range: String.to_integer(range), type: :normal}
+    with {:ok, range} <- parse_integer(range) do
+      bomb = %Bomb{range: range, type: :normal}
+      {:ok, bomb}
+    end
   end
 
   def parse(<<?S, range::binary>>) do
-    %Bomb{range: String.to_integer(range), type: :pierce}
+    with {:ok, range} <- parse_integer(range) do
+      bomb = %Bomb{range: range, type: :pierce}
+      {:ok, bomb}
+    end
   end
+
+  def parse(_), do: :error
 
   def display(:empty), do: "_"
   def display(:rock), do: "R"

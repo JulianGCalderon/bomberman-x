@@ -12,13 +12,11 @@ defmodule BoardTest do
   end
 
   def test_parsing_error(path, error) do
-    try do
-      test_parsing_ok(path)
-    rescue
-      err -> err == error
-    else
-      _ -> throw("Should have failed")
-    end
+    content = File.read!(path)
+
+    board = Board.from_string(content)
+
+    assert board == error
   end
 
   test "all elements" do
@@ -34,14 +32,14 @@ defmodule BoardTest do
   end
 
   test "unknown_element" do
-    test_parsing_error("boards/unknown_element.txt", FunctionClauseError)
+    test_parsing_error("boards/unknown_element.txt", :error)
   end
 
   test "invalid_digit" do
-    test_parsing_error("boards/invalid_digit.txt", ArgumentError)
+    test_parsing_error("boards/invalid_digit.txt", :error)
   end
 
   test "invalid_direction" do
-    test_parsing_error("boards/invalid_direction.txt", FunctionClauseError)
+    test_parsing_error("boards/invalid_direction.txt", :error)
   end
 end
