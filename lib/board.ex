@@ -26,17 +26,27 @@ end
 
 defmodule Element do
   @type t :: :empty | :rock | :wall | Bomb.t() | Detour.t() | Enemy.t()
+  @type bomb_type :: :normal | :pierce
 
   defmodule Bomb do
     defstruct [:range, :type]
-    @type t :: %Element.Bomb{:range => integer(), :type => bomb_type()}
-    @type bomb_type :: :normal | :pierce
+    @type t :: %Element.Bomb{:range => integer(), :type => Element.bomb_type()}
   end
 
   defmodule Detour do
     defstruct [:direction]
     @type t :: %Element.Detour{:direction => direction()}
     @type direction :: :up | :down | :left | :right
+
+    def parse_direction(?D), do: :down
+    def parse_direction(?U), do: :up
+    def parse_direction(?L), do: :left
+    def parse_direction(?R), do: :right
+
+    def display_direction(:up), do: "U"
+    def display_direction(:down), do: "D"
+    def display_direction(:left), do: "L"
+    def display_direction(:right), do: "R"
   end
 
   defmodule Enemy do
@@ -44,45 +54,32 @@ defmodule Element do
     @type t :: %Element.Enemy{:health => integer()}
   end
 
-  def parse_direction(?D), do: :down
-  def parse_direction(?U), do: :up
-  def parse_direction(?L), do: :left
-  def parse_direction(?R), do: :right
+  # def parse_digit(digit) when digit in ?0..?9 do
+  #   digit - ?0
+  # end
 
-  def parse_digit(digit) when digit in ?0..?9 do
-    digit - ?0
-  end
+  # def display_digit(digit) when digit in 0..9 do
+  #   <<?0 + digit>>
+  # end
 
   def parse(<<?_>>), do: :empty
   def parse(<<?R>>), do: :rock
   def parse(<<?W>>), do: :wall
 
   def parse(<<?D, direction>>) do
-    %Detour{direction: parse_direction(direction)}
+    %Detour{direction: Detour.parse_direction(direction)}
   end
 
-  def parse(<<?F, health>>) do
-    %Enemy{health: parse_digit(health)}
+  def parse(<<?F, health::binary>>) do
+    %Enemy{health: String.to_integer(health)}
   end
 
-  def parse(<<?B, range>>) do
-    %Bomb{range: parse_digit(range), type: :normal}
+  def parse(<<?B, range::binary>>) do
+    %Bomb{range: String.to_integer(range), type: :normal}
   end
 
-  def parse(<<?S, range>>) do
-    %Bomb{range: parse_digit(range), type: :pierce}
-  end
-
-  def display_direction(:up), do: "U"
-  def display_direction(:down), do: "D"
-  def display_direction(:left), do: "L"
-  def display_direction(:right), do: "R"
-
-  def display_bomb_type(:pierce), do: "S"
-  def display_bomb_type(:normal), do: "B"
-
-  def display_digit(digit) when digit in 0..9 do
-    <<?0 + digit>>
+  def parse(<<?S, range::binary>>) do
+    %Bomb{range: String.to_integer(range), type: :pierce}
   end
 
   def display(:empty), do: "_"
@@ -90,14 +87,17 @@ defmodule Element do
   def display(:wall), do: "W"
 
   def display(%Detour{direction: direction}) do
-    "D" <> display_direction(direction)
+    "D" <> Detour.display_direction(direction)
   end
 
   def display(%Enemy{health: health}) do
-    "F" <> display_digit(health)
+    "F" <> Integer.to_string(health)
   end
 
   def display(%Bomb{range: range, type: bomb_type}) do
-    display_bomb_type(bomb_type) <> display_digit(range)
+    display_bomb_type(bomb_type) <> Integer.to_string(range)
   end
+
+  def display_bomb_type(:pierce), do: "S"
+  def display_bomb_type(:normal), do: "B"
 end

@@ -1,8 +1,0 @@
-_ _ _ _ _ _ _
-R R R R R R R
-W W W W W W W
-B1 B2 B3 B4 B5 B6 B7
-S1 S2 S3 S4 S5 S6 S7
-F1 F2 F3 F4 F5 F6 F7
-DU DD DL DR _ _ _
-_ _ _ _ _ _ _
