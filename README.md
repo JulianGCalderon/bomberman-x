@@ -18,6 +18,7 @@ Nota: En el juego original las rocas pueden ser destruidas con bombas. Aquí no 
 
 Los laberintos se representan como una matriz separada por lineas y espacios, donde cada posición contiene un elemento particular. Los elementos són:
 
+- `_`: Vacío
 - `R`: Roca
 - `W`: Muro
 - `Br`: Bomba regular, donde `r` indica el rango.
