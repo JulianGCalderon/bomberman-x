@@ -18,12 +18,12 @@ Nota: En el juego original las rocas pueden ser destruidas con bombas. Aquí no 
 
 Los laberintos se representan como una matriz separada por lineas y espacios, donde cada posición contiene un elemento particular. Los elementos són:
 
-- `"R"`: Roca
-- `"W"`: Muro
-- `"Br`: Bomba regular, donde `r` indica el rango.
-- `"Sr`: Bomba de traspaso, donde `r` indica el rango.
-- `"Fh`: Enemigo, donde `h` indica la vida.
-- `"Dd`: Desvio, donde `d` indica una dirección entre `U`, `D`, `L`, `R`.
+- `R`: Roca
+- `W`: Muro
+- `Br`: Bomba regular, donde `r` indica el rango.
+- `Sr`: Bomba de traspaso, donde `r` indica el rango.
+- `Fh`: Enemigo, donde `h` indica la vida.
+- `Dd`: Desvio, donde `d` indica una dirección entre `U`, `D`, `L`, `R`.
 
 
 Luego, los tableros pueden verse como:
