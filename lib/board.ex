@@ -2,17 +2,25 @@ defmodule Board do
   def load!(path) do
     file = File.stream!(path, [:utf8], :line)
 
-    for line <- file do
-      for element <- String.split(line) do
-        Element.parse(element)
-      end
-    end
+    from_lines(file)
   end
 
   def save!(board, path) do
     file = File.open!(path, [:write])
 
     IO.puts(file, Board.to_strings(board))
+  end
+
+  def from_string(string) do
+    from_lines(String.split(string, "\n"))
+  end
+
+  def from_lines(lines) do
+    for line <- lines do
+      for element <- String.split(line) do
+        Element.parse(element)
+      end
+    end
   end
 
   def to_strings(board) do
