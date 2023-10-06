@@ -11,11 +11,11 @@ defmodule BoardTest do
     assert stringed == content
   end
 
-  def test_parsing_error(path, _error) do
+  def test_parsing_error(path, error) do
     try do
       test_parsing_ok(path)
     rescue
-      _error -> :ok
+      err -> err == error
     else
       _ -> throw("Should have failed")
     end
