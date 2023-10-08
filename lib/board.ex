@@ -15,48 +15,12 @@ defmodule Board do
     from_lines(String.split(string, "\n"))
   end
 
-  # def from_lines(lines) do
-  #   try do
-  #     board =
-  #       for line <- lines do
-  #         for element <- String.split(line) do
-  #           case Element.parse(element) do
-  #             {:ok, element} -> element
-  #             error -> throw(error)
-  #           end
-  #         end
-  #       end
-
-  #     {:ok, board}
-  #   catch
-  #     error -> error
-  #   end
-  # end
-
-  def parse_row(row) do
-    Enum.reduce_while(String.split(row), [], fn element, acc ->
-      case Element.parse(element) do
-        {:ok, element} -> {:cont, [element | acc]}
-        error -> {:halt, error}
-      end
-    end)
-    |> case do
-      row when is_list(row) -> {:ok, Enum.reverse(row)}
-      error -> error
-    end
-  end
-
   def from_lines(lines) do
-    Enum.reduce_while(lines, [], fn row, acc ->
-      case parse_row(row) do
-        {:ok, row} -> {:cont, [row | acc]}
-        error -> {:halt, error}
-      end
+    Utils.try_map(lines, fn line ->
+      Utils.try_map(String.split(line), fn element ->
+        Element.parse(element)
+      end)
     end)
-    |> case do
-      board when is_list(board) -> {:ok, Enum.reverse(board)}
-      error -> error
-    end
   end
 
   def to_strings(board) do
@@ -91,7 +55,7 @@ defmodule Element do
     def parse_direction(?U), do: {:ok, :up}
     def parse_direction(?L), do: {:ok, :left}
     def parse_direction(?R), do: {:ok, :right}
-    def parse_direction(_), do: :error
+    def parse_direction(_), do: {:error, :invalid_direction}
 
     def display_direction(:up), do: "U"
     def display_direction(:down), do: "D"
@@ -102,6 +66,8 @@ defmodule Element do
   def parse_integer(number) do
     with {integer, _} <- Integer.parse(number) do
       {:ok, integer}
+    else
+      _ -> {:error, :invalid_number}
     end
   end
 
@@ -137,7 +103,7 @@ defmodule Element do
     end
   end
 
-  def parse(_), do: :error
+  def parse(_), do: {:error, :invalid_type}
 
   def display(:empty), do: "_"
   def display(:rock), do: "R"

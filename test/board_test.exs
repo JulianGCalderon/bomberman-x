@@ -5,19 +5,19 @@ defmodule BoardTest do
   def test_parsing_ok(path) do
     content = File.read!(path)
 
-    {:ok, board} = Board.from_string(content)
+    assert {:ok, board} = Board.from_string(content)
 
     stringed = IO.chardata_to_string(Board.to_strings(board))
 
     assert stringed == content
   end
 
-  def test_parsing_error(path, error) do
+  def test_parsing_error(path, expected_error) do
     content = File.read!(path)
 
-    board = Board.from_string(content)
+    result = Board.from_string(content)
 
-    assert board == error
+    assert result == {:error, expected_error}
   end
 
   test "all elements" do
@@ -33,14 +33,14 @@ defmodule BoardTest do
   end
 
   test "unknown_element" do
-    test_parsing_error("boards/unknown_element.txt", :error)
+    test_parsing_error("boards/unknown_element.txt", :invalid_type)
   end
 
   test "invalid_digit" do
-    test_parsing_error("boards/invalid_digit.txt", :error)
+    test_parsing_error("boards/invalid_digit.txt", :invalid_number)
   end
 
   test "invalid_direction" do
-    test_parsing_error("boards/invalid_direction.txt", :error)
+    test_parsing_error("boards/invalid_direction.txt", :invalid_direction)
   end
 end
