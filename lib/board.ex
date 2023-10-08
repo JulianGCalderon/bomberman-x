@@ -15,42 +15,49 @@ defmodule Board do
     from_lines(String.split(string, "\n"))
   end
 
-  def from_lines(lines) do
-    try do
-      board =
-        for line <- lines do
-          for element <- String.split(line) do
-            case Element.parse(element) do
-              {:ok, element} -> element
-              error -> throw(error)
-            end
-          end
-        end
+  # def from_lines(lines) do
+  #   try do
+  #     board =
+  #       for line <- lines do
+  #         for element <- String.split(line) do
+  #           case Element.parse(element) do
+  #             {:ok, element} -> element
+  #             error -> throw(error)
+  #           end
+  #         end
+  #       end
 
-      {:ok, board}
-    catch
+  #     {:ok, board}
+  #   catch
+  #     error -> error
+  #   end
+  # end
+
+  def parse_row(row) do
+    Enum.reduce_while(String.split(row), [], fn element, acc ->
+      case Element.parse(element) do
+        {:ok, element} -> {:cont, [element | acc]}
+        error -> {:halt, error}
+      end
+    end)
+    |> case do
+      row when is_list(row) -> {:ok, Enum.reverse(row)}
       error -> error
     end
   end
 
-  # def from_row(row) do
-  #   for element <- String.split(row), reduce: {:ok, []} do
-  #     acc ->
-  #       with {:ok, acc} <- acc,
-  #            {:ok, element} <- Element.parse(element) do
-  #         {:ok, acc ++ [element]}
-  #       end
-  #   end
-  # end
-  # def from_lines(lines) do
-  #   for line <- lines, reduce: {:ok, []} do
-  #     acc ->
-  #       with {:ok, acc} <- acc,
-  #            {:ok, line} <- Board.from_row(line) do
-  #         {:ok, acc ++ [line]}
-  #       end
-  #   end
-  # end
+  def from_lines(lines) do
+    Enum.reduce_while(lines, [], fn row, acc ->
+      case parse_row(row) do
+        {:ok, row} -> {:cont, [row | acc]}
+        error -> {:halt, error}
+      end
+    end)
+    |> case do
+      board when is_list(board) -> {:ok, Enum.reverse(board)}
+      error -> error
+    end
+  end
 
   def to_strings(board) do
     Enum.map_intersperse(board, "\n", &Board.row_to_strings/1)
