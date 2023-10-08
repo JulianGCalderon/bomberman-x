@@ -2,7 +2,7 @@ defmodule Board do
   def load!(path) do
     file = File.stream!(path, [:utf8], :line)
 
-    from_lines(file)
+    from_lines!(file)
   end
 
   def save!(board, path) do
@@ -11,8 +11,24 @@ defmodule Board do
     IO.puts(file, Board.to_strings(board))
   end
 
+  def at(board, {x, y}) do
+    Enum.at(board, y) |> Enum.at(x)
+  end
+
+  def put(board, {x, y}, element) do
+    new_row = List.replace_at(Enum.at(board, y), x, element)
+    List.replace_at(board, y, new_row)
+  end
+
   def from_string(string) do
     from_lines(String.split(string, "\n"))
+  end
+
+  def from_lines!(lines) do
+    case from_lines(lines) do
+      {:ok, board} -> board
+      error -> raise error
+    end
   end
 
   def from_lines(lines) do
@@ -62,7 +78,7 @@ defmodule Element do
   end
 
   def parse_integer(number) do
-    with {integer, _} <- Integer.parse(number) do
+    with {integer, _} when integer != 0 <- Integer.parse(number) do
       {:ok, integer}
     else
       _ -> {:error, :invalid_number}
