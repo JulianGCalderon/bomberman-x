@@ -24,11 +24,9 @@ defmodule Board do
   end
 
   def to_strings(board) do
-    Enum.map_intersperse(board, "\n", &Board.row_to_strings/1)
-  end
-
-  def row_to_strings(row) do
-    Enum.map_intersperse(row, " ", &Element.display/1)
+    Enum.map_intersperse(board, "\n", fn row ->
+      Enum.map_intersperse(row, " ", &Element.display/1)
+    end)
   end
 end
 
