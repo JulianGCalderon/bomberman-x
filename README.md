@@ -7,7 +7,7 @@ Bomberman X (¿o era Megaman X?). Implementación en Elixir de la lógica de pro
 
 - [x] Lee un laberinto a partir de un `String`.
 - [x] Lo carga en memoria, siendo representado con estructuras propias.
-- [ ] Detona una bomba en particular.
+- [x] Detona una bomba en particular.
 - [ ] Calcula el estado final del laberinto tras detonar la bomba.
 - [x] Lo vuelve a convertir en `String`.
 
