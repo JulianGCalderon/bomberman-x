@@ -16,13 +16,16 @@ defmodule Board do
   end
 
   def fetch(board, {x, y}) when {x, y} >= {0, 0} do
-    with {:ok, row} <- Enum.fetch(board, y) do
-      Enum.fetch(row, x)
+    with {:ok, row} <- Enum.fetch(board, y),
+         {:ok, element} <- Enum.fetch(row, x) do
+      {:ok, element}
+    else
+      :error -> {:error, :out_of_bounds}
     end
   end
 
   def fetch(_board, {x, y}) when x < 0 or y < 0 do
-    :error
+    {:error, :negative_position}
   end
 
   def put(board, {x, y}, element) do

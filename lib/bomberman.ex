@@ -3,17 +3,13 @@ defmodule Bomberman do
   alias Element.Bomb
 
   def detonate(board, position) do
-    bomb = Board.at(board, position)
-
-    detonate_bomb(board, position, bomb)
-  end
-
-  def detonate_bomb(board, position, bomb) when is_struct(bomb, Bomb) do
-    explode(board, position, bomb)
-  end
-
-  def detonate_bomb(_board, _position, not_bomb) when not is_struct(not_bomb, Bomb) do
-    {:error, :not_bomb}
+    with {:ok, bomb} <- Board.fetch(board, position) do
+      if is_struct(bomb, Bomb) do
+        {:ok, explode(board, position, bomb)}
+      else
+        {:error, :not_bomb}
+      end
+    end
   end
 
   def explode(board, position, bomb) do

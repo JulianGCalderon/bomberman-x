@@ -6,7 +6,7 @@ defmodule BombermanTest do
   test "detonate removes bomb" do
     board = Board.load!("boards/propagate_right.txt")
 
-    board = Bomberman.detonate(board, {0, 0})
+    assert {:ok, board} = Bomberman.detonate(board, {0, 0})
 
     assert :empty = Board.at(board, {0, 0})
   end
@@ -17,10 +17,19 @@ defmodule BombermanTest do
     assert {:error, :not_bomb} = Bomberman.detonate(board, {1, 0})
   end
 
+  test "position must be valid" do
+    board = Board.load!("boards/propagate_right.txt")
+
+    assert {:error, :negative_position} = Bomberman.detonate(board, {-1, 0})
+    assert {:error, :out_of_bounds} = Bomberman.detonate(board, {56, 0})
+    assert {:error, :negative_position} = Bomberman.detonate(board, {0, -1})
+    assert {:error, :out_of_bounds} = Bomberman.detonate(board, {0, 32})
+  end
+
   test "bomb propagates right" do
     board = Board.load!("boards/propagate_right.txt")
 
-    board = Bomberman.detonate(board, {0, 0})
+    assert {:ok, board} = Bomberman.detonate(board, {0, 0})
 
     assert :empty = Board.at(board, {1, 0})
     assert :empty = Board.at(board, {2, 0})
@@ -31,7 +40,7 @@ defmodule BombermanTest do
   test "rock blocks normal bomb" do
     board = Board.load!("boards/rocks.txt")
 
-    board = Bomberman.detonate(board, {0, 0})
+    assert {:ok, board} = Bomberman.detonate(board, {0, 0})
 
     assert %Enemy{health: 1} = Board.at(board, {2, 0})
   end
@@ -39,7 +48,7 @@ defmodule BombermanTest do
   test "pierce bomb pierces rock" do
     board = Board.load!("boards/rocks.txt")
 
-    board = Bomberman.detonate(board, {0, 3})
+    assert {:ok, board} = Bomberman.detonate(board, {0, 3})
 
     assert :empty = Board.at(board, {2, 3})
   end
@@ -47,8 +56,8 @@ defmodule BombermanTest do
   test "wall blocks bomb" do
     board = Board.load!("boards/walls.txt")
 
-    board = Bomberman.detonate(board, {0, 0})
-    board = Bomberman.detonate(board, {0, 3})
+    assert {:ok, board} = Bomberman.detonate(board, {0, 0})
+    assert {:ok, board} = Bomberman.detonate(board, {0, 3})
 
     assert %Enemy{health: 1} = Board.at(board, {2, 0})
     assert %Enemy{health: 1} = Board.at(board, {2, 3})
@@ -57,7 +66,7 @@ defmodule BombermanTest do
   test "bombs trigger each other" do
     board = Board.load!("boards/chain.txt")
 
-    board = Bomberman.detonate(board, {0, 0})
+    assert {:ok, board} = Bomberman.detonate(board, {0, 0})
 
     assert :empty = Board.at(board, {6, 6})
   end
@@ -65,7 +74,7 @@ defmodule BombermanTest do
   test "detours change blast direction" do
     board = Board.load!("boards/detour.txt")
 
-    board = Bomberman.detonate(board, {0, 0})
+    assert {:ok, board} = Bomberman.detonate(board, {0, 0})
 
     assert %Enemy{health: 1} = Board.at(board, {0, 6})
   end

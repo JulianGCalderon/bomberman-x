@@ -17,8 +17,8 @@ defmodule Blast do
          {:cont, blast} <- apply_on(blast, cell) do
       propagate(blast)
     else
-      :error -> blast
       {:halt, blast} -> blast
+      {:error, _} -> blast
     end
   end
 
@@ -37,7 +37,7 @@ defmodule Blast do
   end
 
   def apply_on(blast, bomb) when is_struct(bomb, Bomb) do
-    board = Bomberman.detonate_bomb(blast.board, blast.position, bomb)
+    board = Bomberman.explode(blast.board, blast.position, bomb)
 
     blast = %{blast | board: board}
 
