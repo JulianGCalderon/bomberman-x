@@ -27,6 +27,10 @@ defmodule Element do
     def display_direction(:down), do: "D"
     def display_direction(:left), do: "L"
     def display_direction(:right), do: "R"
+
+    def all_directions() do
+      [:up, :right, :down, :left]
+    end
   end
 
   def parse_integer(number) do

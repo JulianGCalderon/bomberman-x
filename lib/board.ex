@@ -15,6 +15,16 @@ defmodule Board do
     Enum.at(board, y) |> Enum.at(x)
   end
 
+  def fetch(board, {x, y}) when {x, y} >= {0, 0} do
+    with {:ok, row} <- Enum.fetch(board, y) do
+      Enum.fetch(row, x)
+    end
+  end
+
+  def fetch(_board, {x, y}) when x < 0 or y < 0 do
+    :error
+  end
+
   def put(board, {x, y}, element) do
     new_row = List.replace_at(Enum.at(board, y), x, element)
     List.replace_at(board, y, new_row)

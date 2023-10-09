@@ -1,7 +1,11 @@
-require BombermanX
 
-[input_path, output_path, _bomb_x, _bomb_y] = System.argv()
+[input_path, output_path, bomb_x, bomb_y] = System.argv()
 
-bomberman = Board.load!(input_path)
+{bomb_x, _} = Integer.parse(bomb_x)
+{bomb_y, _} = Integer.parse(bomb_y)
 
-Board.save!(bomberman, output_path)
+board = Board.load!(input_path)
+
+board = Bomberman.detonate(board, {bomb_x, bomb_y})
+
+Board.save!(board, output_path)
