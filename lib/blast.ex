@@ -1,11 +1,10 @@
 defmodule Blast do
   alias Element.Detour
 
-  defstruct [:board, :position, :direction, :range, :type, affected: MapSet.new()]
+  defstruct [:board, :position, :direction, :bomb, affected: MapSet.new()]
 
   def new(board, position, bomb, direction) do
-    %{type: type, range: range} = bomb
-    %Blast{board: board, position: position, direction: direction, range: range, type: type}
+    %Blast{board: board, position: position, direction: direction, bomb: bomb}
   end
 
   def calculate(board, position, bomb, direction) do
@@ -16,7 +15,7 @@ defmodule Blast do
     blast.affected
   end
 
-  def propagate(blast) when blast.range > 0 do
+  def propagate(blast) when blast.bomb.range > 0 do
     blast = advance(blast)
 
     with {:ok, cell} <- Board.fetch(blast.board, blast.position),
@@ -28,7 +27,7 @@ defmodule Blast do
     end
   end
 
-  def propagate(blast) when blast.range == 0 do
+  def propagate(blast) when blast.bomb.range == 0 do
     blast
   end
 
@@ -43,7 +42,7 @@ defmodule Blast do
   end
 
   def apply_on(blast, :rock) do
-    case blast.type do
+    case blast.bomb.type do
       :normal -> {:halt, blast}
       :pierce -> {:cont, blast}
     end
@@ -63,9 +62,11 @@ defmodule Blast do
 
   def advance(blast) do
     position = advance_position(blast.position, blast.direction)
-    range = blast.range - 1
 
-    %{blast | range: range, position: position}
+    blast = put_in(blast.bomb.range, blast.bomb.range - 1)
+    blast = put_in(blast.position, position)
+
+    blast
   end
 
   def advance_position({x, y}, direction) do
