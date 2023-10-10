@@ -22,17 +22,17 @@ defmodule Bomberman do
   def explode_element(board, position, bomb) when is_struct(bomb, Bomb) do
     board = Board.put(board, position, :empty)
 
-    cells = calculate_explosion(board, position, bomb)
+    affected_cells = calculate_explosion(board, position, bomb)
 
-    for cell <- cells, reduce: board do
-      board -> explode(board, cell)
+    for {position, element} <- affected_cells, reduce: board do
+      board -> explode_element(board, position, element)
     end
   end
 
   def explode_element(board, position, enemy) when is_struct(enemy, Enemy) do
-    new_cell = damage_enemy(enemy)
+    new_element = damage_enemy(enemy)
 
-    Board.put(board, position, new_cell)
+    Board.put(board, position, new_element)
   end
 
   def calculate_explosion(board, position, bomb) do

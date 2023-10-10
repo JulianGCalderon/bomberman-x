@@ -48,7 +48,7 @@ defmodule BoardTest do
     test_parsing_error("boards/zero_number.txt", :invalid_number)
   end
 
-  test "accessing" do
+  test "accessing elements" do
     board = Board.load!("boards/all_elements.txt")
 
     assert :empty = Board.at(board, {1, 0})
@@ -60,7 +60,7 @@ defmodule BoardTest do
     assert %Element.Detour{direction: :down} = Board.at(board, {1, 6})
   end
 
-  test "modifying" do
+  test "modifying elements" do
     board = Board.load!("boards/clean.txt")
 
     board = Board.put(board, {4, 1}, :rock)
@@ -80,5 +80,13 @@ defmodule BoardTest do
 
     board = Board.put(board, {1, 6}, %Element.Detour{direction: :down})
     assert %Element.Detour{direction: :down} = Board.at(board, {1, 6})
+  end
+
+  test "fetching elements" do
+    board = Board.load!("boards/all_elements.txt")
+
+    assert {:ok, :empty} = Board.fetch(board, {1, 0})
+    assert {:error, :negative_position} = Board.fetch(board, {-1, 0})
+    assert {:error, :out_of_bounds} = Board.fetch(board, {35, 0})
   end
 end

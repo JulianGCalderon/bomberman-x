@@ -4,7 +4,7 @@ defmodule Blast do
   defstruct [:board, :position, :direction, :bomb, affected: MapSet.new()]
 
   def new(board, position, bomb, direction) do
-    %Blast{board: board, position: position, direction: direction, bomb: bomb}
+    struct(Blast, board: board, position: position, direction: direction, bomb: bomb)
   end
 
   def calculate(board, position, bomb, direction) do
@@ -52,8 +52,8 @@ defmodule Blast do
     {:halt, blast}
   end
 
-  def apply_on(blast, _) do
-    affected = MapSet.put(blast.affected, blast.position)
+  def apply_on(blast, element) do
+    affected = MapSet.put(blast.affected, {blast.position, element})
 
     blast = %{blast | affected: affected}
 
