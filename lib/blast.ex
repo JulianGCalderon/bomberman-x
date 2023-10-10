@@ -1,20 +1,25 @@
 defmodule Blast do
   alias Element.Detour
-  alias Element.Enemy
-  alias Element.Bomb
 
-  defstruct [:board, :position, :direction, :range, :type]
+  defstruct [:board, :position, :direction, :bomb, affected: MapSet.new()]
 
   def new(board, position, bomb, direction) do
-    %{type: type, range: range} = bomb
-    %Blast{board: board, position: position, direction: direction, range: range, type: type}
+    struct(Blast, board: board, position: position, direction: direction, bomb: bomb)
   end
 
-  def propagate(blast) when blast.range > 0 do
+  def calculate(board, position, bomb, direction) do
+    blast = new(board, position, bomb, direction)
+
+    blast = propagate(blast)
+
+    blast.affected
+  end
+
+  def propagate(blast) when blast.bomb.range > 0 do
     blast = advance(blast)
 
-    with {:ok, cell} <- Board.fetch(blast.board, blast.position),
-         {:cont, blast} <- apply_on(blast, cell) do
+    with {:ok, element} <- Board.fetch(blast.board, blast.position),
+         {:cont, blast} <- apply_on(blast, element) do
       propagate(blast)
     else
       {:halt, blast} -> blast
@@ -22,30 +27,12 @@ defmodule Blast do
     end
   end
 
-  def propagate(blast) when blast.range == 0 do
+  def propagate(blast) when blast.bomb.range == 0 do
     blast
   end
 
-  def apply_on(blast, enemy) when is_struct(enemy, Enemy) do
-    new_cell = damage_enemy(enemy)
-
-    board = Board.put(blast.board, blast.position, new_cell)
-
-    blast = %{blast | board: board}
-
-    {:cont, blast}
-  end
-
-  def apply_on(blast, bomb) when is_struct(bomb, Bomb) do
-    board = Bomberman.explode(blast.board, blast.position, bomb)
-
-    blast = %{blast | board: board}
-
-    {:cont, blast}
-  end
-
   def apply_on(blast, detour) when is_struct(detour, Detour) do
-    blast = %{blast | direction: detour.direction}
+    blast = put_in(blast.direction, detour.direction)
 
     {:cont, blast}
   end
@@ -55,7 +42,7 @@ defmodule Blast do
   end
 
   def apply_on(blast, :rock) do
-    case blast.type do
+    case blast.bomb.type do
       :normal -> {:halt, blast}
       :pierce -> {:cont, blast}
     end
@@ -65,19 +52,21 @@ defmodule Blast do
     {:halt, blast}
   end
 
-  def damage_enemy(%Enemy{health: 1}) do
-    :empty
-  end
+  def apply_on(blast, element) do
+    affected = MapSet.put(blast.affected, {blast.position, element})
 
-  def damage_enemy(%Enemy{health: health}) do
-    %Enemy{health: health - 1}
+    blast = put_in(blast.affected, affected)
+
+    {:cont, blast}
   end
 
   def advance(blast) do
     position = advance_position(blast.position, blast.direction)
-    range = blast.range - 1
 
-    %{blast | range: range, position: position}
+    blast = put_in(blast.bomb.range, blast.bomb.range - 1)
+    blast = put_in(blast.position, position)
+
+    blast
   end
 
   def advance_position({x, y}, direction) do
