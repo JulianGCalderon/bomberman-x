@@ -1,13 +1,19 @@
 defmodule Blast do
   alias Element.Detour
-  alias Element.Enemy
-  alias Element.Bomb
 
-  defstruct [:board, :position, :direction, :range, :type]
+  defstruct [:board, :position, :direction, :range, :type, affected: MapSet.new()]
 
   def new(board, position, bomb, direction) do
     %{type: type, range: range} = bomb
     %Blast{board: board, position: position, direction: direction, range: range, type: type}
+  end
+
+  def calculate(board, position, bomb, direction) do
+    blast = new(board, position, bomb, direction)
+
+    blast = propagate(blast)
+
+    blast.affected
   end
 
   def propagate(blast) when blast.range > 0 do
@@ -24,24 +30,6 @@ defmodule Blast do
 
   def propagate(blast) when blast.range == 0 do
     blast
-  end
-
-  def apply_on(blast, enemy) when is_struct(enemy, Enemy) do
-    new_cell = damage_enemy(enemy)
-
-    board = Board.put(blast.board, blast.position, new_cell)
-
-    blast = %{blast | board: board}
-
-    {:cont, blast}
-  end
-
-  def apply_on(blast, bomb) when is_struct(bomb, Bomb) do
-    board = Bomberman.explode(blast.board, blast.position, bomb)
-
-    blast = %{blast | board: board}
-
-    {:cont, blast}
   end
 
   def apply_on(blast, detour) when is_struct(detour, Detour) do
@@ -65,12 +53,12 @@ defmodule Blast do
     {:halt, blast}
   end
 
-  def damage_enemy(%Enemy{health: 1}) do
-    :empty
-  end
+  def apply_on(blast, _) do
+    affected = MapSet.put(blast.affected, blast.position)
 
-  def damage_enemy(%Enemy{health: health}) do
-    %Enemy{health: health - 1}
+    blast = %{blast | affected: affected}
+
+    {:cont, blast}
   end
 
   def advance(blast) do
