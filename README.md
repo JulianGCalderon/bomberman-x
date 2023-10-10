@@ -11,10 +11,7 @@ Bomberman X (¿o era Megaman X?). Implementación en Elixir de la lógica de pro
 - Calcula el estado final del laberinto tras detonar la bomba.
 - Lo vuelve a convertir en `String`.
 
-Notas:
-
-- En el juego original las rocas pueden ser destruidas con bombas. Aquí no ocurre.
-- En el juego original las bombas no pueden dañar mas de una vez al mismo enemigo. Aquí si ocurre.
+Nota: en el juego original las rocas pueden ser destruidas con bombas. Aquí no ocurre.
 
 ## Laberintos
 
