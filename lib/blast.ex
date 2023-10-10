@@ -18,8 +18,8 @@ defmodule Blast do
   def propagate(blast) when blast.bomb.range > 0 do
     blast = advance(blast)
 
-    with {:ok, cell} <- Board.fetch(blast.board, blast.position),
-         {:cont, blast} <- apply_on(blast, cell) do
+    with {:ok, element} <- Board.fetch(blast.board, blast.position),
+         {:cont, blast} <- apply_on(blast, element) do
       propagate(blast)
     else
       {:halt, blast} -> blast
@@ -32,7 +32,7 @@ defmodule Blast do
   end
 
   def apply_on(blast, detour) when is_struct(detour, Detour) do
-    blast = %{blast | direction: detour.direction}
+    blast = put_in(blast.direction, detour.direction)
 
     {:cont, blast}
   end
@@ -55,7 +55,7 @@ defmodule Blast do
   def apply_on(blast, element) do
     affected = MapSet.put(blast.affected, {blast.position, element})
 
-    blast = %{blast | affected: affected}
+    blast = put_in(blast.affected, affected)
 
     {:cont, blast}
   end
