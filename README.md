@@ -2,6 +2,21 @@
 
 Bomberman X (¿o era Megaman X?). Implementación en Elixir de la lógica de propagación de explociones del clasico juego Bomberman.
 
+## Ejecución
+
+Para ejecutarlo, utilizaremos MIX
+
+```bash
+$ mix run main.ex INPUT_BOARD OUTPUT_BOARD BOMB_X BOMB_Y
+```
+
+Como entrada, podemos utilizar los tableros de la carpeta `boards`. Por ejemplo,
+podriamos ejecutar:
+
+```bash
+$ mix run main.ex ./boards/detour.txt ./output.txt 0 0
+```
+
 ## Funcionalidad
 
 

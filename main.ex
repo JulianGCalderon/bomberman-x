@@ -6,6 +6,8 @@
 
 board = Board.load!(input_path)
 
-board = Bomberman.detonate(board, {bomb_x, bomb_y})
+case Bomberman.trigger(board, {bomb_x, bomb_y}) do
+  { :ok, board } -> Board.save!(board, output_path)
+  { :error, error } -> IO.puts("Error: #{error}")
+end
 
-Board.save!(board, output_path)
