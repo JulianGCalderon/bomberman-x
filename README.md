@@ -1,6 +1,6 @@
 # Bomberman X
 
-Bomberman X (¿o era Megaman X?). Implementación en Elixir de la lógica de propagación de explociones del clasico juego Bomberman.
+Bomberman X (¿o era Megaman X?). Implementación en Elixir de la lógica de propagación de explosiones del clasico juego Bomberman.
 
 ## Ejecución
 
